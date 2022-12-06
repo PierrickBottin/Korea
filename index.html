@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Korea</title>
+
+    <style>
+      body {
+        text-align: center;
+      }
+
+      p {
+        display: block;
+        margin: 0;
+      }
+
+      select {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 30px;
+      }
+
+      button {
+        align-items: center;
+        appearance: none;
+        border-radius: 4px;
+        border-style: none;
+        box-shadow: rgba(0, 0, 0, .2) 0 3px 1px -2px,rgba(0, 0, 0, .14) 0 2px 2px 0,rgba(0, 0, 0, .12) 0 1px 5px 0;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-flex;
+        font-family: Roboto,sans-serif;
+        font-size: 40px;
+        font-weight: bold;
+        height: 100px;
+        justify-content: center;
+        letter-spacing: .0892857em;
+        line-height: normal;
+        width: 90vw;
+        outline: none;
+        overflow: visible;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        will-change: transform,opacity;
+        background-color: purple;
+        margin: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <select name="type_select" id="type_select" onchange="start()"></select>
+    <div style="display: table; height: 50vh; overflow: hidden;">
+      <div style="display: table-cell; vertical-align: middle; width: 100vw; font-size: 75px; font-family: Hiragino Sans;">
+        <p id="question"></p>
+        <p id="type_label" style="font-size: 20px; color: grey; font-style: italic;"></p>
+      </div>
+    </div>
+    <div id="answers"></div>
+
+    <button onclick="next()" style="background-color:grey; margin-top: 75px;">Next</button>
+  </body>
+
+  <script>
+    var dict = [
+      {"fr": "Pomme", "kr": "사과", "type": "Fruits"},
+      {"fr": "Poire", "kr": "배", "type": "Fruits"},
+      {"fr": "Prune", "kr": "자두", "type": "Fruits"},
+      {"fr": "Abricot", "kr": "살구", "type": "Fruits"},
+      {"fr": "Banane", "kr": "바나나", "type": "Fruits"},
+      {"fr": "Cerise", "kr": "체리", "type": "Fruits"},
+      {"fr": "Raisin", "kr": "포도", "type": "Fruits"},
+      {"fr": "Kiwi", "kr": "키위", "type": "Fruits"},
+      {"fr": "Mangue", "kr": "망고", "type": "Fruits"},
+      {"fr": "Orange", "kr": "오렌지", "type": "Fruits"},
+      {"fr": "Pêche", "kr": "복숭아", "type": "Fruits"},
+      {"fr": "Fraise", "kr": "딸기", "type": "Fruits"},
+      {"fr": "Pastéque", "kr": "수박", "type": "Fruits"},
+
+      {"fr": "Comcombre", "kr": "오이", "type": "Légume"},
+
+      {"fr": "Eau", "kr": "물", "type": "Boisson"},
+      {"fr": "Café", "kr": "커피", "type": "Boisson"},
+      {"fr": "Lait", "kr": "우유", "type": "Boisson"},
+      {"fr": "Thé", "kr": "차", "type": "Boisson"},
+
+      {"fr": "1", "kr": "하나", "type": "Nombre coréens"},
+      {"fr": "2", "kr": "둘", "type": "Nombre coréens"},
+      {"fr": "3", "kr": "셋", "type": "Nombre coréens"},
+      {"fr": "4", "kr": "넷", "type": "Nombre coréens"},
+      {"fr": "5", "kr": "다섯", "type": "Nombre coréens"},
+      {"fr": "6", "kr": "여섯", "type": "Nombre coréens"},
+      {"fr": "7", "kr": "일곱", "type": "Nombre coréens"},
+      {"fr": "8", "kr": "여덟", "type": "Nombre coréens"},
+      {"fr": "9", "kr": "아홉", "type": "Nombre coréens"},
+      {"fr": "10", "kr": "열", "type": "Nombre coréens"},
+      {"fr": "20", "kr": "스물", "type": "Nombre coréens"},
+      {"fr": "30", "kr": "서른", "type": "Nombre coréens"},
+      {"fr": "40", "kr": "마흔", "type": "Nombre coréens"},
+      {"fr": "50", "kr": "쉰", "type": "Nombre coréens"},
+      {"fr": "60", "kr": "예순", "type": "Nombre coréens"},
+      {"fr": "70", "kr": "일흔", "type": "Nombre coréens"},
+      {"fr": "80", "kr": "여든", "type": "Nombre coréens"},
+      {"fr": "90", "kr": "아흔", "type": "Nombre coréens"},
+
+      {"fr": "1", "kr": "일", "type": "Nombre sino-coréens"},
+      {"fr": "2", "kr": "이", "type": "Nombre sino-coréens"},
+      {"fr": "3", "kr": "삼", "type": "Nombre sino-coréens"},
+      {"fr": "4", "kr": "사", "type": "Nombre sino-coréens"},
+      {"fr": "5", "kr": "오", "type": "Nombre sino-coréens"},
+      {"fr": "6", "kr": "육", "type": "Nombre sino-coréens"},
+      {"fr": "7", "kr": "칠", "type": "Nombre sino-coréens"},
+      {"fr": "8", "kr": "팔", "type": "Nombre sino-coréens"},
+      {"fr": "9", "kr": "구", "type": "Nombre sino-coréens"},
+      {"fr": "10", "kr": "십", "type": "Nombre sino-coréens"},
+      {"fr": "100", "kr": "백", "type": "Nombre sino-coréens"},
+      {"fr": "1000", "kr": "전", "type": "Nombre sino-coréens"},
+      {"fr": "1 0000", "kr": "만", "type": "Nombre sino-coréens"},
+      {"fr": "1 0000 0000", "kr": "억", "type": "Nombre sino-coréens"},
+
+      {"fr": "Bébé", "kr": "아기", "type": "Personne"},
+      {"fr": "Jeune enfant", "kr": "유아", "type": "Personne"},
+      {"fr": "Enfant", "kr": "아이", "type": "Personne"},
+      {"fr": "Chanteur", "kr": "가수", "type": "Personne"},
+      {"fr": "Docteur", "kr": "의사", "type": "Personne"},
+      {"fr": "Serveur", "kr": "웨이터", "type": "Personne"},
+
+      {"fr": "Renard", "kr": "여우", "type": "Animaux"},
+      {"fr": "Pie", "kr": "까치", "type": "Animaux"},
+      {"fr": "Autruche", "kr": "타조", "type": "Animaux"},
+      {"fr": "Arraignée", "kr": "개미", "type": "Animaux"},
+      {"fr": "Cochon", "kr": "돼지", "type": "Animaux"},
+      {"fr": "Ours", "kr": "곰", "type": "Animaux"},
+
+      {"fr": "Meuble", "kr": "가구", "type": "Maison"},
+      {"fr": "Radio", "kr": "라디오", "type": "Maison"},
+      {"fr": "Horloge | Montre", "kr": "시계", "type": "Maison"},
+      {"fr": "Mur", "kr": "벽", "type": "Maison"},
+      {"fr": "Cuisine", "kr": "부엌", "type": "Maison"},
+      {"fr": "Dehors", "kr": "밖", "type": "Maison"},
+      {"fr": "Maison", "kr": "집", "type": "Maison"},
+
+      {"fr": "Chaussures de soirée", "kr": "구두", "type": "Vêtement"},
+      {"fr": "Pantalon", "kr": "바지", "type": "Vêtement"},
+      {"fr": "Serre-tête", "kr": "머리띠", "type": "Vêtement"},
+
+      {"fr": "Arbre", "kr": "나무", "type": "Nature"},
+      {"fr": "Lac", "kr": "호수", "type": "Nature"},
+      {"fr": "Racine", "kr": "뿌리", "type": "Nature"},
+
+      {"fr": "Nez", "kr": "코", "type": "Corps"},
+      {"fr": "Oreille", "kr": "귀", "type": "Corps"},
+      {"fr": "Bras", "kr": "팔", "type": "Corps"},
+
+      {"fr": "Salé", "kr": "짜다", "type": "Nourriture"},
+      {"fr": "Pain", "kr": "빵", "type": "Nourriture"},
+
+      {"fr": "Train", "kr": "기차", "type": "Transport"},
+
+      {"fr": "Ecrire", "kr": "쓰다", "type": "Verbe"},
+      {"fr": "Ecouter / Entendre", "kr": "듣다", "type": "Verbe"},
+
+      {"fr": "Magasin", "kr": "가게", "type": "Lieu"},
+      {"fr": "Entreprise", "kr": "회사", "type": "Lieu"},
+
+      {"fr": "Faire froid", "kr": "추워요", "type": "Autre"},
+    ];
+
+    var categories = [""];
+    dict.forEach(e => {
+      if (!categories.includes(e.type))
+        categories.push(e.type)
+    })
+    var select = document.getElementById("type_select");
+    categories.forEach(e => {
+      var opt = document.createElement("option");
+      opt.value = e;
+      opt.textContent = e;
+      select.appendChild(opt);
+    });
+
+    var currentQuestion = null;
+    var answered = true
+
+    function start() {
+      currentQuestion = null;
+      answered = true
+      newQcm();
+    }
+
+    function mp3(name) {
+      new Audio("./mp3/" + name + ".mp3").play();
+    }
+
+    function next() {
+      if (answered) {
+        newQcm();
+      } else {
+        answered = true
+        document.getElementById("good_answer").style.backgroundColor = "green";
+      }
+    }
+
+    function newQcm() {
+      var newQuestion = dict[Math.floor(Math.random() * dict.length)];
+      while (newQuestion.fr == currentQuestion || (select.value != "" && select.value != newQuestion.type)) {
+        newQuestion = dict[Math.floor(Math.random() * dict.length)];
+      }
+
+      currentQuestion = newQuestion.fr;
+
+      document.getElementById("question").innerHTML = newQuestion.fr;
+      document.getElementById("type_label").innerHTML = newQuestion.type;
+
+      var answer = document.createElement("button");
+      answer.innerHTML = newQuestion.kr;
+      answer.id = "good_answer";
+      answer.addEventListener('click', function handleClick(event) {
+        mp3(newQuestion.kr);
+
+        if (!answered) {
+          next();
+        }
+      });
+
+      var answerListButton = [answer];
+      var answerListString = [newQuestion.fr];
+      while (answerListButton.length < 4) {
+        var potentiel = dict[Math.floor(Math.random() * dict.length)];
+
+        if (!answerListString.includes(potentiel.fr) && (select.value == "" || select.value == potentiel.type)) {
+          var answerAlt = document.createElement("button");
+          answerAlt.innerHTML = potentiel.kr;
+          answerAlt.addEventListener('click', function handleClick(event) {
+            mp3(this.innerHTML);
+
+            if (!answered) {
+              this.style.backgroundColor = "red";
+              next();
+            }
+          });
+
+
+          answerListButton.push(answerAlt);
+          answerListString.push(potentiel.fr);
+        }
+      }
+
+      var answers = document.getElementById("answers");
+      answers.innerHTML = "";
+
+      while (answerListButton.length > 0) {
+        answers.appendChild(answerListButton.splice(Math.floor(Math.random()*answerListButton.length), 1)[0]);
+      }
+
+      answered = false;
+    }
+
+    start();
+  </script>
+</html>
