@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Korea</title>
+
+    <style>
+      body {
+        text-align: center;
+      }
+
+      p {
+        display: block;
+      }
+
+      button {
+        align-items: center;
+        appearance: none;
+        border-radius: 4px;
+        border-style: none;
+        box-shadow: rgba(0, 0, 0, .2) 0 3px 1px -2px,rgba(0, 0, 0, .14) 0 2px 2px 0,rgba(0, 0, 0, .12) 0 1px 5px 0;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-flex;
+        font-family: Roboto,sans-serif;
+        font-size: .875rem;
+        font-weight: 500;
+        height: 36px;
+        justify-content: center;
+        letter-spacing: .0892857em;
+        line-height: normal;
+        min-width: 64px;
+        outline: none;
+        overflow: visible;
+        padding: 0 16px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: middle;
+        will-change: transform,opacity;
+        background-color: purple;
+        margin: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="display: table; height: 40vh; overflow: hidden;">
+      <div id="question" style="display: table-cell; vertical-align: middle; width: 100vw;"></div>
+    </div>
+    <div id="answers"></div>
+
+    <button onclick="next()">Next</button>
+  </body>
+
+  <script>
+    var dict = [
+      {"fr": "Pomme", "kr": "사과", "type": "Fruits"},
+      {"fr": "Poire", "kr": "배", "type": "Fruits"},
+      {"fr": "Prune", "kr": "자두", "type": "Fruits"},
+      {"fr": "Abricot", "kr": "살구", "type": "Fruits"},
+      {"fr": "Banane", "kr": "바나나", "type": "Fruits"},
+      {"fr": "Cerise", "kr": "체리", "type": "Fruits"},
+      {"fr": "Raisin", "kr": "포도", "type": "Fruits"},
+      {"fr": "Kiwi", "kr": "키위", "type": "Fruits"},
+      {"fr": "Mangue", "kr": "망고", "type": "Fruits"},
+      {"fr": "Orange", "kr": "오렌지", "type": "Fruits"},
+      {"fr": "Pêche", "kr": "복숭아", "type": "Fruits"},
+      {"fr": "Fraise", "kr": "딸기", "type": "Fruits"},
+      {"fr": "Pastéque", "kr": "수박", "type": "Fruits"}
+    ];
+
+    var currentQuestion = null;
+    var answered = true
+
+    function next() {
+      if (answered) {
+        newQcm();
+      } else {
+        answered = true
+        document.getElementById("good_answer").style.backgroundColor = "green";
+      }
+    }
+
+    function newQcm() {
+      var newQuestion = dict[Math.floor(Math.random() * dict.length)];
+      while (newQuestion.fr == currentQuestion) {
+        newQuestion = dict[Math.floor(Math.random() * dict.length)];
+      }
+
+      currentQuestion = newQuestion.fr;
+
+      document.getElementById("question").innerHTML = newQuestion.fr;
+
+      var answer = document.createElement("button");
+      answer.innerHTML = newQuestion.kr;
+      answer.id = "good_answer";
+      answer.addEventListener('click', function handleClick(event) {
+        if (!answered) {
+          next();
+        }
+      });
+
+      var answerListButton = [answer];
+      var answerListString = [newQuestion.fr];
+      while (answerListButton.length < 4) {
+        var potentiel = dict[Math.floor(Math.random() * dict.length)];
+
+        if (!answerListString.includes(potentiel.fr)) {
+          var answerAlt = document.createElement("button");
+          answerAlt.innerHTML = potentiel.kr;
+          answerAlt.addEventListener('click', function handleClick(event) {
+            if (!answered) {
+              this.style.backgroundColor = "red";
+              next();
+            }
+          });
+
+
+          answerListButton.push(answerAlt);
+          answerListString.push(potentiel.fr);
+        }
+      }
+
+      var answers = document.getElementById("answers");
+      answers.innerHTML = "";
+
+      while (answerListButton.length > 0) {
+        answers.appendChild(answerListButton.splice(Math.floor(Math.random()*answerListButton.length), 1)[0]);
+      }
+
+      answered = false;
+    }
+  </script>
+</html>
